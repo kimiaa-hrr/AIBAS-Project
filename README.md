@@ -1,6 +1,22 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2709
-\cocoatextscaling0\cocoaplatform0{\fonttbl}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-}
+# Project Name
+
+**Course:** M. Grum: Advanced AI-based Application Systems  
+**Repository Ownership:**  
+- Team Members: 
+
+    -- Kimia Hariri, 
+    -- Member 2
+
+---
+
+## Description
+
+Briefly describe your project here.  
+Include the goal, approach, and any key algorithms or techniques used.
+
+---
+
+## Directory Structure
+
+Explain your folder structure. Example:
+
