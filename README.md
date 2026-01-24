@@ -56,3 +56,20 @@ Pull the image from Docker Hub:
 docker pull kimiahr/learningbase_athletes_performance_prediction:latest
 
 docker pull kimiahr/activationbase_athletes_performance_prediction:latest
+
+```
+## How to get the image for running the code
+```bash
+docker pull kimiahr/tensorflow_custom:latest
+```
+
+## How to Run the TensorFlow container interactively
+```bash
+
+docker run -it --rm \
+  -v ai_system:/tmp \
+  -v /path/to/your/project:/app \
+  kimiahr/tensorflow_custom:latest \
+  /bin/bash
+
+```
