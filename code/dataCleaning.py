@@ -65,4 +65,4 @@ df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
 
 # Save cleaned dataset
 df.to_csv("../data/dataset/joint_data_collection.csv", index=False)
-print("Saved cleaned_dataset.csv")
+print("Saved cleaned_dataset")
