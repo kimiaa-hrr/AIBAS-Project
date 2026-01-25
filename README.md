@@ -2,10 +2,10 @@
 
 **Course:** M. Grum: Advanced AI-based Application Systems  
 **Repository Ownership:**  
-- Team Members: 
+- Team Memberss: 
 
     -- Kimia Hariri, 
-    -- Member 2
+    -- Member 2 ---
 
 ---
 
