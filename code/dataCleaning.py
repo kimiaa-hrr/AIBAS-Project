@@ -8,14 +8,13 @@ df = pd.read_csv("../data/dataset/scrapedDataset.csv")
 
 
 # filling the NA for athelete names with unknown
-df["Athlete_Name"]=df["Athlete_Name"].fillna("Unknown")
+# df["Athlete_Name"]=df["Athlete_Name"].fillna("Unknown")
 
 
 
-df = df.dropna(subset=['Athlete_ID'])
+# df = df.dropna(subset=['Athlete_ID'])
 df = df.dropna(subset=['Sport_Type'])
-df = df.dropna(subset=['Event'])
-
+# df = df.dropna(subset=['Event'])
 
 # Only replace actual missing values, not the string "None"
 df["Injury_History"] = df["Injury_History"].fillna("None")
@@ -44,6 +43,11 @@ df['Athlete_ID_New'] = ['A{:03d}'.format(i+1) for i in range(len(df))]
 col = df.pop('Athlete_ID_New')
 df.insert(0, 'Athlete_ID_New', col)
 
+
+
+
+# Drop columns
+df=df.drop(columns=["Athlete_ID","Event","Athlete_Name","Competition_Date","Athlete_ID_New"])
 
 
 # ============== Drop outliers with mathematical methods ==============
