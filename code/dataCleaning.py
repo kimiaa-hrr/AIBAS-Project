@@ -138,7 +138,7 @@ df["Altitude_Training"] = pd.Categorical(
 )
 
 
-df_encoded = pd.get_dummies(df, columns=["Injury_History","Sport_Type","Training_Intensity","Altitude_Training"], drop_first=True)
+df_encoded = pd.get_dummies(df, columns=["Injury_History","Sport_Type","Training_Intensity","Altitude_Training"], drop_first=True,dtype=int)
 df = df_encoded 
 
 
