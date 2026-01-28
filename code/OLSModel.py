@@ -85,7 +85,7 @@ plt.xlabel("Actual Performance_Index")
 plt.ylabel("Predicted Performance_Index")
 plt.title("OLS: Predicted vs Actual")
 plt.grid(True)
-plt.savefig("../documentation/pred_vs_actual.png")  # saves the figure
+plt.savefig("../documentation/OLS/pred_vs_actual_OLS.png")  # saves the figure
 plt.show()
 
 # ------------------------------
@@ -101,5 +101,5 @@ plt.xlabel("Fitted Values")
 plt.ylabel("Residuals")
 plt.title("Residuals vs Fitted")
 plt.grid(True)
-plt.savefig("../documentation/residuals_vs_fitted.png")  # saves the figure
+plt.savefig("../documentation/OLS/residuals_vs_fitted_OLS.png")  # saves the figure
 plt.show()
