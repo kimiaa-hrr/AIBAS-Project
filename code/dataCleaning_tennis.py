@@ -4,6 +4,7 @@ from sklearn.preprocessing import MinMaxScaler
 # ================= Load data =================
 df = pd.read_csv("../data/dataset/scrapedDataset.csv")
 
+df = df[df['Sport_Type'] == 'Tennis'].copy() 
 
 
 # ================= Drop Values =================
@@ -20,11 +21,11 @@ df = df.drop(columns=[
 ], errors="ignore")
 
 
+
 # ================= Handle missing data =================
 
-# Injury history: treat missing as "None"
-
 # Fill categorical columns with mode
+
 df = df.dropna()
 
 # --------------------------------------------------
@@ -43,14 +44,17 @@ df = df.dropna()
 
 
 
-# ================= Outlier removal (IQR, inputs only) =================
-# Recompute numeric columns after row drops
+# ================= Numeric handling =================
+
+# Identify numeric columns
 numeric_cols = df.select_dtypes(include="number").columns
 
-for col in numeric_cols:
-    if col == "Performance_Metric":
-        continue  # never filter on target
+# Fill numeric NaNs with median
+df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
 
+# ================= Outlier removal (IQR, inputs only) =================
+
+for col in numeric_cols:
     Q1 = df[col].quantile(0.25)
     Q3 = df[col].quantile(0.75)
     IQR = Q3 - Q1
@@ -62,10 +66,10 @@ for col in numeric_cols:
 
 print(f"Rows after outlier removal: {len(df)}")
 
+# ================= Scaling =================
 
-# ================= Input normalization =================
-
-
+# Recompute numeric columns after row drops
+numeric_cols = df.select_dtypes(include="number").columns
 
 # Inputs only (exclude target)
 input_features = [col for col in numeric_cols if col != "Performance_Metric"]
@@ -75,26 +79,19 @@ df[input_features] = scaler.fit_transform(df[input_features])
 
 # ================= Target normalization (within sport) =================
 
-
 # Save min/max per sport (optional, useful for interpretation)
-sport_stats = (
-    df.groupby("Sport_Type")["Performance_Metric"]
-    .agg(["min", "max"])
-    .to_dict("index")
-)
+X = df.drop(columns=["Performance_Metric"])
+y = df["Performance_Metric"]
 
-def scale_group(group):
-    min_val = group.min()
-    max_val = group.max()
-    if max_val > min_val:
-        return (group - min_val) / (max_val - min_val)
-    else:
-        return pd.Series(0.0, index=group.index)
+# 2. Select only the numeric columns to normalize 
+# (You don't want to normalize 0/1 dummy variables!)
+numeric_cols = X.select_dtypes(include=['number']).columns
 
-df["Performance_Metric"] = (
-    df.groupby("Sport_Type")["Performance_Metric"]
-    .transform(scale_group)
-)
+# 3. Apply Min-Max Scaling: (value - min) / (max - min)
+X[numeric_cols] = (X[numeric_cols] - X[numeric_cols].min()) / (X[numeric_cols].max() - X[numeric_cols].min())
+
+# 4. If you also want to normalize your target (y):
+y = (y - y.min()) / (y.max() - y.min())
 
 # ================= Encoding =================
 
@@ -102,18 +99,6 @@ df["Performance_Metric"] = (
 df["Injury_History"] = pd.Categorical(
     df["Injury_History"],
     categories=["None", "Minor", "Major"],
-    ordered=True
-)
-
-# Sport type
-df["Sport_Type"] = (
-    df["Sport_Type"]
-    .str.strip()
-    .str.capitalize()
-)
-df["Sport_Type"] = pd.Categorical(
-    df["Sport_Type"],
-    categories=["Running", "Swimming", "Cycling", "Soccer", "Basketball", "Tennis"],
     ordered=True
 )
 
@@ -155,5 +140,5 @@ df = pd.get_dummies(
 )
 
 # ================= Save cleaned dataset =================
-df.to_csv("../data/dataset/joint_data_collection.csv", index=False)
+df.to_csv("../data/dataset/joint_data_collection_tennis.csv", index=False)
 print("Saved cleaned_dataset")

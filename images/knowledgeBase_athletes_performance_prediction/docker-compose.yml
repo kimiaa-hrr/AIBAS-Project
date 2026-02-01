@@ -1,12 +1,12 @@
 version: "3.9"
 
 services:
-  learning_base:
+  activation_base:
     build: .
     image: kimiahr/learningbase_athletes_performance_prediction
     volumes:
-       - ai_system:/tmp
-    command: sh  # simple shell, no rm/cp hack
+      - ai_system:/tmp
+    command: sh
 
 volumes:
   ai_system:
