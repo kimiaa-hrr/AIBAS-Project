@@ -1,39 +1,46 @@
-# ann_model.py
-# ANN model with training and saved plots
+# ANN model with training, evaluation, plots, and activation prediction
 
 import os
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.optimizers import Adam
 
 
 # --------------------------------------------------
-# 1. Load dataset
+# 1. Paths
 # --------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "training_data.csv")
 
-df = pd.read_csv(DATA_PATH)
+TRAINING_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "training_data.csv")
+ACTIVATION_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "activation_data.csv")
+
+
+# --------------------------------------------------
+# 2. Load dataset
+# --------------------------------------------------
+df = pd.read_csv(TRAINING_PATH)
 print("Dataset loaded successfully")
 
-
-# --------------------------------------------------
-# 2. Target
-# --------------------------------------------------
 target_column = "Performance_Metric"
 
 
 # --------------------------------------------------
-# 3. Numeric features only
+# 3. Use numeric features only
 # --------------------------------------------------
 numeric_df = df.select_dtypes(include=["number"])
+
 X = numeric_df.drop(columns=[target_column])
 y = numeric_df[target_column]
+
+# SAVE feature names (IMPORTANT)
+feature_columns = X.columns
 
 
 # --------------------------------------------------
@@ -58,13 +65,9 @@ X_test = scaler.transform(X_test)
 model = Sequential([
     Dense(64, activation="relu", input_shape=(X_train.shape[1],)),
     Dense(32, activation="relu"),
-    Dense(1)
+    Dense(1, activation="linear")
 ])
 
-
-# --------------------------------------------------
-# 7. Compile
-# --------------------------------------------------
 model.compile(
     optimizer=Adam(learning_rate=0.001),
     loss="mse",
@@ -73,31 +76,37 @@ model.compile(
 
 
 # --------------------------------------------------
-# 8. Train (IMPORTANT: history is defined HERE)
+# 7. Train model
 # --------------------------------------------------
 history = model.fit(
     X_train,
     y_train,
+    validation_split=0.2,
     epochs=50,
     batch_size=32,
-    validation_split=0.2,
     verbose=1
 )
 
 
 # --------------------------------------------------
-# 9. Evaluate
+# 8. Evaluate on test data
 # --------------------------------------------------
-loss, mae = model.evaluate(X_test, y_test, verbose=0)
+test_loss, test_mae = model.evaluate(X_test, y_test, verbose=0)
 print("Training completed successfully ✅")
-print(f"Test MAE: {mae:.4f}")
+print(f"Test MAE: {test_mae}")
+
+# --------------------------------------------------
+# Save trained model
+# --------------------------------------------------
+MODEL_PATH = os.path.join(BASE_DIR, "ann_model.keras")
+model.save(MODEL_PATH)
+print(f"Model saved at: {MODEL_PATH}")
+
 
 
 # --------------------------------------------------
-# 10. Save plots (NO GUI REQUIRED)
+# 9. Plot & save training curves
 # --------------------------------------------------
-
-# Loss plot
 plt.figure()
 plt.plot(history.history["loss"], label="Training Loss")
 plt.plot(history.history["val_loss"], label="Validation Loss")
@@ -105,11 +114,10 @@ plt.xlabel("Epoch")
 plt.ylabel("Loss (MSE)")
 plt.title("Loss vs Epochs")
 plt.legend()
-plt.grid(True)
+plt.tight_layout()
 plt.savefig("loss_vs_epochs.png")
 plt.close()
 
-# MAE plot
 plt.figure()
 plt.plot(history.history["mae"], label="Training MAE")
 plt.plot(history.history["val_mae"], label="Validation MAE")
@@ -117,8 +125,25 @@ plt.xlabel("Epoch")
 plt.ylabel("MAE")
 plt.title("MAE vs Epochs")
 plt.legend()
-plt.grid(True)
+plt.tight_layout()
 plt.savefig("mae_vs_epochs.png")
 plt.close()
 
-print("Plots saved: loss_vs_epochs.png and mae_vs_epochs.png")
+
+# --------------------------------------------------
+# 10. Activation data prediction (FIXED)
+# --------------------------------------------------
+activation_df = pd.read_csv(ACTIVATION_PATH)
+
+activation_numeric = activation_df.select_dtypes(include=["number"])
+
+# FORCE same columns as training
+activation_numeric = activation_numeric.reindex(
+    columns=feature_columns,
+    fill_value=0
+)
+
+activation_scaled = scaler.transform(activation_numeric)
+activation_prediction = model.predict(activation_scaled)
+
+print("Activation prediction:", activation_prediction[0][0])
