@@ -140,5 +140,5 @@ df = pd.get_dummies(
 )
 
 # ================= Save cleaned dataset =================
-df.to_csv("../data/dataset/joint_data_collection_running.csv", index=False)
+df.to_csv("../data/dataset/joint_data_collection_tennis.csv", index=False)
 print("Saved cleaned_dataset")

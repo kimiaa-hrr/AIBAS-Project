@@ -2,7 +2,7 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 
 
-df = pd.read_csv("../data/dataset/joint_data_collection_running.csv")
+df = pd.read_csv("../data/dataset/joint_data_collection_tennis.csv")
 
 
 
@@ -14,8 +14,8 @@ training_data, test_data = train_test_split(
 )
 
 
-training_data.to_csv("../data/dataset/training_data_running.csv", index=False)
-test_data.to_csv("../data/dataset/test_data_running.csv", index=False)
+training_data.to_csv("../data/dataset/training_data_tennis.csv", index=False)
+test_data.to_csv("../data/dataset/test_data_tennis.csv", index=False)
 
 
 print("saved training_data")
