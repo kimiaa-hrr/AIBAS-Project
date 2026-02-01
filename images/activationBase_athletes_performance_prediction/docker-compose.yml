@@ -6,11 +6,7 @@ services:
     image: kimiahr/activationbase_athletes_performance_prediction
     volumes:
       - ai_system:/tmp
-    command:
-      - sh
-      - "-c"
-      - |
-        rm -rf /tmp/activationBase/ && cp -r /activationBase/ /tmp/;
+    command: sh
 
 volumes:
   ai_system:

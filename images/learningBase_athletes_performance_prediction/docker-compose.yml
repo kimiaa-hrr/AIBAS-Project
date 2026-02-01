@@ -6,11 +6,8 @@ services:
     image: kimiahr/learningbase_athletes_performance_prediction
     volumes:
        - ai_system:/tmp
-    command:
-    - sh
-    - "-c"
-    - |
-      rm -rf /tmp/learningBase/ && cp -r /learningBase/ /tmp/;
+    command: sh  # simple shell, no rm/cp hack
+
 volumes:
   ai_system:
     external: true
