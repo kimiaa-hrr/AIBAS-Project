@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  knowledge_base:
+    image: kimiahr/learningbase_athletes_performance_prediction
+    volumes:
+      - ai_system:/tmp
+    command:
+      - sh
+      - "-c"
+      - |
+        rm -rf /tmp/knowledgeBase/ && cp -r /knowledgeBase/* /tmp/knowledgeBase/;
+
+  activation_base:
+    image: kimiahr/activationbase_athletes_performance_prediction
+    volumes:
+      - ai_system:/tmp
+    command:
+      - sh
+      - "-c"
+      - |
+        rm -rf /tmp/activationBase/ && cp -r /activationBase/* /tmp/activationBase/;
+
+  code_base:
+    image: kimiahr/codebase_athletes_performance_prediction
+    user: root
+    volumes:
+      - ai_system:/tmp
+    depends_on:
+      - knowledge_base
+      - activation_base
+    command:
+      - sh
+      - "-c"
+      - |
+        rm -rf /tmp/codeBase/ && cp -r /model_execution/* /tmp/codeBase/;
+        python3 /tmp/codeBase/apply_ols.py;
+
+volumes:
+  ai_system:
+    external: true
