@@ -120,11 +120,10 @@ plt.close()
 test_loss, test_mae = model.evaluate(X_test, y_test, verbose=0)
 print(f"Test MAE: {test_mae}")
 
-# ============================================================
-# 9. Save model
-# ============================================================
-
-MODEL_PATH = os.path.join(MODEL_DIR, "ann_model.keras")
+# --------------------------------------------------
+# Save trained model
+# --------------------------------------------------
+MODEL_PATH = os.path.join(BASE_DIR, "ann_model.keras")
 model.save(MODEL_PATH)
 print(f"Model saved at: {MODEL_PATH}")
 
