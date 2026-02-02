@@ -18,10 +18,10 @@ from tensorflow.keras.optimizers import Adam
 # --------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-TRAINING_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "training_data.csv")
+TRAINING_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "training_data_tennis.csv")
 ACTIVATION_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "activation_data.csv")
 
-
+print("==================== TRAINING_PATH ==================== ",TRAINING_PATH)
 # --------------------------------------------------
 # 2. Load dataset
 # --------------------------------------------------
@@ -98,7 +98,7 @@ print(f"Test MAE: {test_mae}")
 # --------------------------------------------------
 # Save trained model
 # --------------------------------------------------
-MODEL_PATH = os.path.join(BASE_DIR, "ann_model.keras")
+MODEL_PATH = os.path.join(BASE_DIR,"", "ann_model.keras")
 model.save(MODEL_PATH)
 print(f"Model saved at: {MODEL_PATH}")
 
