@@ -1,71 +1,73 @@
-# ANN model with training, evaluation, plots, and activation prediction
+# ============================================================
+# ANN Model – Final Version (No Extra Split)
+# ============================================================
 
 import os
-import pandas as pd
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+import scipy.stats as stats
 
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.optimizers import Adam
 
-
-# --------------------------------------------------
+# ============================================================
 # 1. Paths
-# --------------------------------------------------
+# ============================================================
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-TRAINING_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "training_data.csv")
-ACTIVATION_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "activation_data.csv")
+TRAIN_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "training_data.csv")
+TEST_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "test_data.csv")
 
+DOC_DIR = os.path.join(BASE_DIR, "..", "documentation", "Ann")
+MODEL_DIR = os.path.join(BASE_DIR, "..", "model")
 
-# --------------------------------------------------
-# 2. Load dataset
-# --------------------------------------------------
-df = pd.read_csv(TRAINING_PATH)
-print("Dataset loaded successfully")
+os.makedirs(DOC_DIR, exist_ok=True)
+os.makedirs(MODEL_DIR, exist_ok=True)
 
-target_column = "Performance_Metric"
+# ============================================================
+# 2. Load datasets (already split)
+# ============================================================
 
+train_df = pd.read_csv(TRAIN_PATH)
+test_df = pd.read_csv(TEST_PATH)
 
-# --------------------------------------------------
+print("Training & test datasets loaded")
+
+TARGET = "Performance_Metric"
+
+# ============================================================
 # 3. Use numeric features only
-# --------------------------------------------------
-numeric_df = df.select_dtypes(include=["number"])
+# ============================================================
 
-X = numeric_df.drop(columns=[target_column])
-y = numeric_df[target_column]
+X_train = train_df.select_dtypes(include=["number"]).drop(columns=[TARGET])
+y_train = train_df[TARGET]
 
-# SAVE feature names (IMPORTANT)
-feature_columns = X.columns
+X_test = test_df.select_dtypes(include=["number"]).drop(columns=[TARGET])
+y_test = test_df[TARGET]
 
+# Save feature order (IMPORTANT)
+feature_columns = X_train.columns
 
-# --------------------------------------------------
-# 4. Train-test split
-# --------------------------------------------------
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
+# ============================================================
+# 4. Scaling
+# ============================================================
 
-
-# --------------------------------------------------
-# 5. Scaling
-# --------------------------------------------------
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
+# ============================================================
+# 5. Build ANN
+# ============================================================
 
-# --------------------------------------------------
-# 6. Build ANN
-# --------------------------------------------------
 model = Sequential([
     Dense(64, activation="relu", input_shape=(X_train.shape[1],)),
     Dense(32, activation="relu"),
-    Dense(1, activation="linear")
+    Dense(1, activation="sigmoid")   # performance normalized 0–1
 ])
 
 model.compile(
@@ -74,76 +76,103 @@ model.compile(
     metrics=["mae"]
 )
 
+# ============================================================
+# 6. Train
+# ============================================================
 
-# --------------------------------------------------
-# 7. Train model
-# --------------------------------------------------
 history = model.fit(
     X_train,
     y_train,
-    validation_split=0.2,
+    validation_data=(X_test, y_test),
     epochs=50,
     batch_size=32,
     verbose=1
 )
 
+# ============================================================
+# 7. Save training curves
+# ============================================================
 
-# --------------------------------------------------
-# 8. Evaluate on test data
-# --------------------------------------------------
+plt.figure()
+plt.plot(history.history["loss"], label="Train Loss")
+plt.plot(history.history["val_loss"], label="Val Loss")
+plt.legend()
+plt.title("Loss vs Epochs")
+plt.xlabel("Epoch")
+plt.ylabel("MSE")
+plt.savefig(os.path.join(DOC_DIR, "loss_vs_epochs.png"))
+plt.close()
+
+plt.figure()
+plt.plot(history.history["mae"], label="Train MAE")
+plt.plot(history.history["val_mae"], label="Val MAE")
+plt.legend()
+plt.title("MAE vs Epochs")
+plt.xlabel("Epoch")
+plt.ylabel("MAE")
+plt.savefig(os.path.join(DOC_DIR, "mae_vs_epochs.png"))
+plt.close()
+
+# ============================================================
+# 8. Evaluate
+# ============================================================
+
 test_loss, test_mae = model.evaluate(X_test, y_test, verbose=0)
-print("Training completed successfully ✅")
 print(f"Test MAE: {test_mae}")
 
-# --------------------------------------------------
-# Save trained model
-# --------------------------------------------------
-MODEL_PATH = os.path.join(BASE_DIR, "ann_model.keras")
+# ============================================================
+# 9. Save model
+# ============================================================
+
+MODEL_PATH = os.path.join(MODEL_DIR, "ann_model.keras")
 model.save(MODEL_PATH)
 print(f"Model saved at: {MODEL_PATH}")
 
+# ============================================================
+# 10. ANN Diagnostic Plots (Instructor Requested)
+# ============================================================
 
+y_pred = model.predict(X_test).flatten()
+residuals = y_test.values - y_pred
+std_residuals = residuals / np.std(residuals)
 
-# --------------------------------------------------
-# 9. Plot & save training curves
-# --------------------------------------------------
+# --- Residuals vs Fitted
 plt.figure()
-plt.plot(history.history["loss"], label="Training Loss")
-plt.plot(history.history["val_loss"], label="Validation Loss")
-plt.xlabel("Epoch")
-plt.ylabel("Loss (MSE)")
-plt.title("Loss vs Epochs")
-plt.legend()
-plt.tight_layout()
-plt.savefig("loss_vs_epochs.png")
+plt.scatter(y_pred, residuals, alpha=0.6)
+plt.axhline(0, color="red", linestyle="--")
+plt.xlabel("Fitted Values")
+plt.ylabel("Residuals")
+plt.title("Residuals vs Fitted (ANN)")
+plt.savefig(os.path.join(DOC_DIR, "ann_residuals_vs_fitted.png"))
 plt.close()
 
+# --- Q-Q Plot
 plt.figure()
-plt.plot(history.history["mae"], label="Training MAE")
-plt.plot(history.history["val_mae"], label="Validation MAE")
-plt.xlabel("Epoch")
-plt.ylabel("MAE")
-plt.title("MAE vs Epochs")
-plt.legend()
-plt.tight_layout()
-plt.savefig("mae_vs_epochs.png")
+stats.probplot(residuals, dist="norm", plot=plt)
+plt.title("Normal Q-Q Plot (ANN Residuals)")
+plt.savefig(os.path.join(DOC_DIR, "ann_qq_plot.png"))
 plt.close()
 
+# --- Scale-Location
+plt.figure()
+plt.scatter(y_pred, np.sqrt(np.abs(std_residuals)), alpha=0.6)
+plt.xlabel("Fitted Values")
+plt.ylabel("√|Standardized Residuals|")
+plt.title("Scale-Location Plot (ANN)")
+plt.savefig(os.path.join(DOC_DIR, "ann_scale_location.png"))
+plt.close()
 
-# --------------------------------------------------
-# 10. Activation data prediction (FIXED)
-# --------------------------------------------------
-activation_df = pd.read_csv(ACTIVATION_PATH)
+# --- Residuals vs Leverage (ANN Approximation)
+leverage = np.sum(X_test ** 2, axis=1)
+leverage = leverage / leverage.max()
 
-activation_numeric = activation_df.select_dtypes(include=["number"])
+plt.figure()
+plt.scatter(leverage, std_residuals, alpha=0.6)
+plt.axhline(0, color="red", linestyle="--")
+plt.xlabel("Approx. Leverage")
+plt.ylabel("Standardized Residuals")
+plt.title("Residuals vs Leverage (ANN Approx.)")
+plt.savefig(os.path.join(DOC_DIR, "ann_residuals_vs_leverage.png"))
+plt.close()
 
-# FORCE same columns as training
-activation_numeric = activation_numeric.reindex(
-    columns=feature_columns,
-    fill_value=0
-)
-
-activation_scaled = scaler.transform(activation_numeric)
-activation_prediction = model.predict(activation_scaled)
-
-print("Activation prediction:", activation_prediction[0][0])
+print("All ANN diagnostics generated successfully")
