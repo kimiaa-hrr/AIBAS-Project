@@ -13,6 +13,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.optimizers import Adam
 
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.layers import Dense, Dropout
 # ============================================================
 # 1. Paths
 # ============================================================
@@ -66,7 +68,9 @@ X_test = scaler.transform(X_test)
 
 model = Sequential([
     Dense(64, activation="relu", input_shape=(X_train.shape[1],)),
+    Dropout(0.2),  # Randomly shuts off 20% of neurons during training
     Dense(32, activation="relu"),
+    Dropout(0.2),  # Helps prevent the model from "memorizing" noise
     Dense(1, activation="sigmoid")   # performance normalized 0–1
 ])
 
@@ -79,6 +83,12 @@ model.compile(
 # ============================================================
 # 6. Train
 # ============================================================
+# Define the early stopping monitor
+early_stopping = EarlyStopping(
+    monitor='val_loss', 
+    patience=5,           # Number of epochs to wait for improvement
+    restore_best_weights=True  # Returns the model to its best version
+)
 
 history = model.fit(
     X_train,
@@ -86,7 +96,8 @@ history = model.fit(
     validation_data=(X_test, y_test),
     epochs=50,
     batch_size=32,
-    verbose=1
+    verbose=1,
+    callbacks=[early_stopping] # <--- Add this here
 )
 
 # ============================================================

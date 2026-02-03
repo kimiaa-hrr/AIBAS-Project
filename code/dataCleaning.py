@@ -73,6 +73,11 @@ input_features = [col for col in numeric_cols if col != "Performance_Metric"]
 scaler = MinMaxScaler()
 df[input_features] = scaler.fit_transform(df[input_features])
 
+
+#Scale Output (Target)
+scaler_y = MinMaxScaler()
+df[["Performance_Metric"]] = scaler_y.fit_transform(df[["Performance_Metric"]])
+
 # ================= Target normalization (within sport) =================
 
 

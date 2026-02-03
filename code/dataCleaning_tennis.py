@@ -52,6 +52,11 @@ numeric_cols = df.select_dtypes(include="number").columns
 # Fill numeric NaNs with median
 df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
 
+
+#Scale Output (Target)
+scaler_y = MinMaxScaler()
+df[["Performance_Metric"]] = scaler_y.fit_transform(df[["Performance_Metric"]])
+
 # ================= Outlier removal (IQR, inputs only) =================
 
 for col in numeric_cols:
