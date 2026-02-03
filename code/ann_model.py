@@ -21,8 +21,8 @@ from tensorflow.keras.layers import Dense, Dropout
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-TRAIN_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "training_data.csv")
-TEST_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "test_data.csv")
+TRAIN_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "training_data_tennis.csv")
+TEST_PATH = os.path.join(BASE_DIR, "..", "data", "dataset", "test_data_tennis.csv")
 
 DOC_DIR = os.path.join(BASE_DIR, "..", "documentation", "Ann")
 MODEL_DIR = os.path.join(BASE_DIR, "..", "model")

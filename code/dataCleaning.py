@@ -25,21 +25,19 @@ df = df.drop(columns=[
 # Injury history: treat missing as "None"
 
 # Fill categorical columns with mode
-df = df.dropna()
+# df = df.dropna()
 
-# --------------------------------------------------
-# 3. Handle missing values in categorical columns
-# --------------------------------------------------
-# cat_cols = df.select_dtypes(include="string").columns  # or "string" if using pandas >= 2.0
-# for col in cat_cols:
-#     df[col] = df[col].fillna(df[col].mode()[0])  # fill with most frequent value
+# Handle missing values in categorical columns
 
-# # --------------------------------------------------
-# # 4. Handle missing values in numeric columns
-# # --------------------------------------------------
-# num_cols = df.select_dtypes(include=["number"]).columns
-# for col in num_cols:
-#     df[col] = df[col].fillna(df[col].median())  # fill with median to avoid outliers
+cat_cols = df.select_dtypes(include="string").columns  # or "string" if using pandas >= 2.0
+for col in cat_cols:
+    df[col] = df[col].fillna(df[col].mode()[0])  # fill with most frequent value
+
+# # # Handle missing values in numeric columns
+
+num_cols = df.select_dtypes(include=["number"]).columns
+for col in num_cols:
+    df[col] = df[col].fillna(df[col].median())  # fill with median to avoid outliers
 
 
 
@@ -73,10 +71,6 @@ input_features = [col for col in numeric_cols if col != "Performance_Metric"]
 scaler = MinMaxScaler()
 df[input_features] = scaler.fit_transform(df[input_features])
 
-
-#Scale Output (Target)
-scaler_y = MinMaxScaler()
-df[["Performance_Metric"]] = scaler_y.fit_transform(df[["Performance_Metric"]])
 
 # ================= Target normalization (within sport) =================
 
