@@ -15,9 +15,6 @@ from tensorflow.keras.optimizers import Adam
 
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.layers import Dense, Dropout
-
-
-
 # ============================================================
 # 1. Paths
 # ============================================================
