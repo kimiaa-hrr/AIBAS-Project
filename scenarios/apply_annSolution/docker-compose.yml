@@ -1,16 +1,20 @@
 version: "3.9"
 
 services:
+
+  # knowledge Base container
   knowledge_base:
-    image: kimiahr/learningbase_athletes_performance_prediction
+    image: kimiahr/knowledgebase_athletes_performance_prediction
     volumes:
       - ai_system:/tmp
     command:
       - sh
       - "-c"
       - |
-        rm -rf /tmp/knowledgeBase/ && cp -r /knowledgeBase/* /tmp/knowledgeBase/;
+        rm -rf /tmp/knowledgease && cp -r /knowledgeBase /tmp/
 
+
+  # Activation Base container
   activation_base:
     image: kimiahr/activationbase_athletes_performance_prediction
     volumes:
@@ -19,22 +23,27 @@ services:
       - sh
       - "-c"
       - |
-        rm -rf /tmp/activationBase/ && cp -r /activationBase/* /tmp/activationBase/;
+        rm -rf /tmp/activationBase && cp -r /activationBase /tmp/
 
+
+  # Code Base container
   code_base:
-    image: kimiahr/codebase_athletes_performance_prediction
     user: root
+    image: kimiahr/codebase_athletes_performance_prediction
+    depends_on:
+      - "knowledge_base"
+      - "activation_base"
     volumes:
       - ai_system:/tmp
-    depends_on:
-      - knowledge_base
-      - activation_base
     command:
       - sh
       - "-c"
       - |
-        rm -rf /tmp/codeBase/ && cp -r /model_execution/* /tmp/codeBase/;
-        python3 /tmp/codeBase/apply_ann.py;
+        rm -rf /tmp/codeBase && cp -r /codeBase /tmp/
+        python /tmp/codeBase/apply_ann.py
+        tail -f /dev/null
+        "
+
 
 volumes:
   ai_system:

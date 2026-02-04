@@ -1,9 +1,18 @@
-FROM python:3.10-slim
+FROM python:3.11-slim
 
-RUN pip install --no-cache-dir tensorflow==2.15.0 pandas numpy scikit-learn
+# Install required packages
+RUN pip install --no-cache-dir \
+    tensorflow==2.20.0 \
+    pandas \
+    numpy \
+    scikit-learn \
+    statsmodels  \
+    torch
 
-WORKDIR /app
 
-COPY apply_ann.py .
+# Create folders for code and results
+RUN mkdir -p /codeBase /tmp/results
 
-ENTRYPOINT ["python", "apply_ann.py"]
+# Copy both scripts into the image
+COPY apply_ols.py /codeBase/
+COPY apply_ann.py /codeBase/

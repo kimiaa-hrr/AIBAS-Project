@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  code_base:
+    build: .
+    user: root
+    image: kimiahr/codebase_athletes_performance_prediction
+    volumes:
+      - ai_system:/tmp
+    command:
+      - sh
+      - "-c"
+      - |
+        rm -rf /tmp/codeBase && cp -r /codeBase /tmp/
+    stdin_open: true
+    tty: true
+
+volumes:
+  ai_system:
+    external: true
