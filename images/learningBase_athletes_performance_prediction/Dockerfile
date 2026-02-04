@@ -1,11 +1,10 @@
 FROM busybox
 
-# Create folders
-RUN mkdir -p /tmp/learningBase/train /tmp/learningBase/validation
+# Create folders in the image (outside /tmp)
+RUN mkdir -p /learningBase/train /learningBase/validation
 
-# Copy files
-COPY training_data.csv /tmp/learningBase/train/
-COPY test_data.csv /tmp/learningBase/validation/
-COPY README.md /tmp/learningBase/
+# Copy files into the image folders
+COPY training_data.csv /learningBase/train/
+COPY test_data.csv /learningBase/validation/
+COPY README.md /learningBase/
 
-CMD ["sh"]

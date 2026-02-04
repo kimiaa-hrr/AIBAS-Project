@@ -1,10 +1,8 @@
 FROM busybox
 
-# Create folder
-RUN mkdir -p /tmp/activationBase
+# Create folder in the image (outside /tmp)
+RUN mkdir -p /activationBase
 
-# Copy files
-COPY activation_data.csv /tmp/activationBase/activation_data.csv
-COPY README.md /tmp/activationBase/Readme.md
-
-CMD ["sh"]
+# Copy files into the image folder
+COPY activation_data.csv /activationBase/
+COPY README.md /activationBase/

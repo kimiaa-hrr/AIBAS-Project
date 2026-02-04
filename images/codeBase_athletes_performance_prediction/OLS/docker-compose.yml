@@ -1,16 +1,17 @@
 version: "3.9"
 
 services:
-  activation_base:
+  code_base:
     build: .
-    image: kimiahr/activationbase_athletes_performance_prediction
+    user: root
+    image: kimiahr/codebase_athletes_performance_prediction
     volumes:
       - ai_system:/tmp
     command:
       - sh
       - "-c"
       - |
-        rm -rf /tmp/activationBase && cp -r /activationBase /tmp/
+        rm -rf /tmp/codeBase && cp -r /codeBase /tmp/
     stdin_open: true
     tty: true
 

@@ -78,8 +78,8 @@ print(ols_model.summary())
 # Save trained model
 # ------------------------------
 
-# with open("../model/OLS/currentOlsSolution.pkl", "wb") as f:
-#     pickle.dump(ols_model, f)
+with open("../model/OLS/currentOlsSolution.pkl", "wb") as f:
+    pickle.dump(ols_model, f)
 
 # ------------------------------
 # Make predictions on test set
